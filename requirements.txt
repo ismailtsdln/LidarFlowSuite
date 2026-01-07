@@ -1,0 +1,17 @@
+torch>=2.0.0
+torchvision
+torchaudio
+numpy
+open3d
+fastapi
+uvicorn
+typer
+pyyaml
+scipy
+pytest
+tqdm
+pydantic
+python-multipart
+streamlit
+plotly
+tensorboard

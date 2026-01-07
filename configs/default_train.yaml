@@ -1,0 +1,9 @@
+data_root: "data/kitti"
+batch_size: 4
+epochs: 10
+lr: 0.001
+checkpoint_dir: "checkpoints"
+num_points: 2048
+scheduler:
+  name: "cosine"
+  epochs: 10

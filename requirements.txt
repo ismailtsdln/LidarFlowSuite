@@ -16,3 +16,4 @@ streamlit
 plotly
 tensorboard
 rich
+nuscenes-devkit

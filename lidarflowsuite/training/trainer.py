@@ -1,4 +1,4 @@
-from torch.utils.tensorboard import SummaryWriter
+from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn
 from lidarflowsuite.utils.logger import logger
 from lidarflowsuite.utils.metrics import compute_epe
 
@@ -19,38 +19,40 @@ class Trainer:
     def train_epoch(self, epoch):
         self.model.train()
         total_loss = 0
-        pbar = tqdm(self.train_loader, desc=f"Epoch {epoch}")
         
-        for pc1, pc2 in pbar:
-            pc1, pc2 = pc1.to(self.device), pc2.to(self.device)
+        with Progress(
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(),
+            TimeRemainingColumn(),
+            expand=True
+        ) as progress:
+            task = progress.add_task(f"[yellow]Epoch {epoch}[/yellow]", total=len(self.train_loader))
             
-            self.optimizer.zero_grad()
-            
-            # Forward pass (simplified)
-            # In real case, we'd need features for pc2 to warp
-            feat1 = self.model.backbone(pc1.transpose(1, 2)).transpose(1, 2)
-            feat2 = self.model.backbone(pc2.transpose(1, 2)).transpose(1, 2)
-            
-            # Simple warping approximation for self-supervised
-            # Ideally use a proper correlation layer
-            pred_flow = self.model.flow_head(feat1, pc1, feat1) 
-            
-            loss = self.loss_fn(pc1, pc2, pred_flow)
-            
-            # Anomaly check
-            if torch.isnan(loss) or torch.isinf(loss):
-                logger.warning(f"Anomaly detected! Loss is {loss}. Skipping batch.")
-                continue
+            for pc1, pc2 in self.train_loader:
+                pc1, pc2 = pc1.to(self.device), pc2.to(self.device)
                 
-            loss.backward()
-            self.optimizer.step()
-            
-            total_loss += loss.item()
-            pbar.set_postfix({'loss': loss.item()})
-            
-            # Log to TensorBoard
-            step = (epoch - 1) * len(self.train_loader) + pbar.n
-            self.writer.add_scalar('Loss/train', loss.item(), step)
+                self.optimizer.zero_grad()
+                
+                # Forward pass (multi-scale list)
+                pred_flows = self.model(pc1, pc2)
+                pred_flow = pred_flows[0] # Take full scale for loss computation
+                
+                loss = self.loss_fn(pc1, pc2, pred_flow, model=self.model)
+                
+                if torch.isnan(loss) or torch.isinf(loss):
+                    logger.warning(f"Anomaly detected! Loss is {loss}. Skipping batch.")
+                    continue
+                    
+                loss.backward()
+                self.optimizer.step()
+                
+                total_loss += loss.item()
+                progress.update(task, advance=1, description=f"[yellow]Epoch {epoch}[/yellow] [cyan]Loss: {loss.item():.4f}[/cyan]")
+                
+                # Log to TensorBoard
+                step = (epoch - 1) * len(self.train_loader) + progress.tasks[0].completed
+                self.writer.add_scalar('Loss/train', loss.item(), step)
             
         return total_loss / len(self.train_loader)
 

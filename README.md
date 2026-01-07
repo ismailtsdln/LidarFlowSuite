@@ -6,10 +6,11 @@
 
 * **Self-Supervised Learning**: Predict 3D scene flow without expensive manual labeling.
 * **Modular Architecture**: Clearly separated data loading, model definition, training loop, and API.
-* **Multi-Dataset Support**: Built-in support for KITTI and NuScenes datasets.
-* **Advanced Self-Supervised Losses**: Cycle-consistency and KNN-based smoothness losses for better motion estimation.
-* **3D Dashboard**: Interactive Streamlit-based visualizer for point clouds and flow vectors.
-* **Edge Optimization**: Scripts for ONNX export and quantization preparation.
+* **Multi-Dataset Support**: Full integration for KITTI Odometry and NuScenes datasets (supports multi-sweep).
+* **Advanced self-supervised Losses**: Cycle-consistency and KNN-based smoothness losses.
+* **Multi-Scale Prediction**: Hierarchical flow estimation for robust large-motion handling.
+* **Benchmark Evaluation**: Formal evaluation pipeline with `EPE`, `Acc_Strict`, and `Acc_Relax` metrics.
+* **3D Dashboard**: Interactive Streamlit-based visualizer.
 
 ## 🚀 Quick Start
 
@@ -28,23 +29,21 @@ pip install -e .
 lidarflowsuite train --config configs/default_train.yaml
 ```
 
+#### Evaluation
+
+```bash
+lidarflowsuite eval --dataset kitti --checkpoint checkpoints/latest.pth
+```
+
 #### Launch Dashboard
 
 ```bash
 lidarflowsuite dashboard
 ```
 
-#### API Server
+## 📚 Tutorials
 
-```bash
-lidarflowsuite api
-```
-
-#### Export Model
-
-```bash
-python scripts/export.py --checkpoint checkpoints/latest.pth
-```
+Check out our [interactive tutorials](file:///Users/ismailtasdelen/Documents/GitHub/LidarFlowSuite/tutorials/01_kitti_walkthrough.ipynb) to get started with the codebase.
 
 ## 🏗️ Architecture
 

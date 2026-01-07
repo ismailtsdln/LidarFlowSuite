@@ -13,5 +13,6 @@ def test_model_forward():
     model = SceneFlowModel()
     pc1 = torch.randn(1, 1024, 3)
     pc2 = torch.randn(1, 1024, 3)
-    flow = model(pc1, pc2)
-    assert flow.shape == (1, 1024, 3)
+    flows = model(pc1, pc2)
+    assert isinstance(flows, list)
+    assert flows[0].shape == (1, 1024, 3)

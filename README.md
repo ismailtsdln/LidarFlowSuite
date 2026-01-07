@@ -4,11 +4,12 @@
 
 ## 🌟 Features
 
-*   **Self-Supervised Learning**: Predict 3D scene flow without expensive manual labeling.
-*   **Modular Architecture**: Clearly separated data loading, model definition, training loop, and API.
-*   **Multi-Dataset Support**: Built-in support for KITTI and NuScenes datasets.
-*   **Production Ready**: CLI for daily research tasks and FastAPI for remote inference deployments.
-*   **Advanced Monitoring**: Built-in anomaly detection and comprehensive metric tracking.
+* **Self-Supervised Learning**: Predict 3D scene flow without expensive manual labeling.
+* **Modular Architecture**: Clearly separated data loading, model definition, training loop, and API.
+* **Multi-Dataset Support**: Built-in support for KITTI and NuScenes datasets.
+* **Advanced Self-Supervised Losses**: Cycle-consistency and KNN-based smoothness losses for better motion estimation.
+* **3D Dashboard**: Interactive Streamlit-based visualizer for point clouds and flow vectors.
+* **Edge Optimization**: Scripts for ONNX export and quantization preparation.
 
 ## 🚀 Quick Start
 
@@ -22,18 +23,27 @@ pip install -e .
 ### Basic Usage
 
 #### Training
+
 ```bash
 lidarflowsuite train --config configs/default_train.yaml
 ```
 
-#### Inference CLI
+#### Launch Dashboard
+
 ```bash
-lidarflowsuite predict --input samples/pcd_0.bin --checkpoint latest.pth
+lidarflowsuite dashboard
 ```
 
 #### API Server
+
 ```bash
 lidarflowsuite api
+```
+
+#### Export Model
+
+```bash
+python scripts/export.py --checkpoint checkpoints/latest.pth
 ```
 
 ## 🏗️ Architecture
